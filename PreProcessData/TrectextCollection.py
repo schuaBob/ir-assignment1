@@ -14,27 +14,17 @@ class TrectextCollection:
         return
 
     def __prepare_file(self):
-        offset, totalLines = 0, 0
-        offset2 = 0
-        # to be removed
-        i = 0
+        offset, endByte = 0, 0
+
         while line := self.__file.readline():
-            # to be removed
-            if i == 3:
-                break
             if "<DOC>" in line:
                 offset = self.__file.tell()
                 continue
 
             if "</DOC>" in line:
-                i += 1
-                offset2 = self.__file.tell()
-                yield (offset, offset2 - len(line))
-                totalLines = 0
-                self.__file.seek(offset2)
-                # to be removed
-            else:
-                totalLines += 1
+                endByte = self.__file.tell()
+                yield (offset, endByte)
+                self.__file.seek(endByte)
 
     def nextDocument(self):
         # 1. When called, this API processes one document from corpus, and returns its doc number and content.
@@ -43,14 +33,14 @@ class TrectextCollection:
             offset, endbyte = docInfo
             self.__file.seek(offset)
             doc = self.__file.read(endbyte - offset)
-            docNo = self.__get_tag_content("DOCNO", doc)
-            content = self.__get_tag_content("TEXT", doc)
+            docNo = self.__extract_content(doc, "DOCNO")
+            content = self.__extract_content(doc, "TEXT")
             return [docNo, content]
         else:
             self.__file.close()
             return docInfo
 
-    def __get_tag_content(self, tag: str, doc: str):
+    def __extract_content(self, doc: str, tag: str):
         openTag, closeTag = f"<{tag}>", f"</{tag}>"
         return doc[
             (start := doc.find(openTag) + len(openTag)) : doc.find(closeTag, start)
