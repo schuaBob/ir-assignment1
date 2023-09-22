@@ -1,6 +1,4 @@
 import Classes.Path as Path
-from tqdm import tqdm
-import os
 
 
 # Efficiency and memory cost should be paid with extra attention.
@@ -17,23 +15,16 @@ class TrectextCollection:
 
     def __prepare_file(self):
         offset, endByte = 0, 0
-        with tqdm(
-            total=os.path.getsize(Path.DataTextDir),
-            unit="B",
-            unit_scale=True,
-            unit_divisor=1024,
-        ) as t:
-            while line := self.__file.readline():
-                t.update(len(line.encode()))
 
-                if "<DOC>" in line:
-                    offset = self.__file.tell()
-                    continue
+        while line := self.__file.readline():
+            if "<DOC>" in line:
+                offset = self.__file.tell()
+                continue
 
-                if "</DOC>" in line:
-                    endByte = self.__file.tell()
-                    yield (offset, endByte)
-                    self.__file.seek(endByte)
+            if "</DOC>" in line:
+                endByte = self.__file.tell()
+                yield (offset, endByte)
+                self.__file.seek(endByte)
 
     def nextDocument(self):
         # 1. When called, this API processes one document from corpus, and returns its doc number and content.
