@@ -215,3 +215,4 @@ Temporary Items
 *.trectext
 *.trecweb
 *.txt
+.vscode
