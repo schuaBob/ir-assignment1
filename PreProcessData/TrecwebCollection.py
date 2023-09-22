@@ -36,7 +36,7 @@ class TrecwebCollection:
             offset, endbyte = docInfo
             self.__file.seek(offset)
             doc = self.__file.read(endbyte - offset)
-            docNo = self.__extract_content(doc, "DOCNO")
+            docNo = self.__extract_content(doc, "DOCNO").strip()
             self.__htmlParser.feed(self.__extract_content(doc, "</DOCHDR>", "</DOC>"))
             content = self.__htmlParser.get_content()
             return [docNo, content]
@@ -49,7 +49,7 @@ class TrecwebCollection:
         closeTag = endTag if endTag else f"</{startTag}>"
         return doc[
             (start := doc.find(openTag) + len(openTag)) : doc.find(closeTag, start)
-        ].strip()
+        ]
 
 
 class TrecHTMLParser(HTMLParser):

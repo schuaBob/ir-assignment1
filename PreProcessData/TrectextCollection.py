@@ -33,7 +33,7 @@ class TrectextCollection:
             offset, endbyte = docInfo
             self.__file.seek(offset)
             doc = self.__file.read(endbyte - offset)
-            docNo = self.__extract_content(doc, "DOCNO")
+            docNo = self.__extract_content(doc, "DOCNO").strip()
             content = self.__extract_content(doc, "TEXT")
             return [docNo, content]
         else:
@@ -44,4 +44,4 @@ class TrectextCollection:
         openTag, closeTag = f"<{tag}>", f"</{tag}>"
         return doc[
             (start := doc.find(openTag) + len(openTag)) : doc.find(closeTag, start)
-        ].strip()
+        ]
