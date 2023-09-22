@@ -1,5 +1,9 @@
 import Classes.Path as Path
 from html.parser import HTMLParser
+from tqdm import tqdm
+from tempfile import NamedTemporaryFile, mkdtemp
+import shutil
+import os
 
 
 # Efficiency and memory cost should be paid with extra attention.
@@ -18,15 +22,23 @@ class TrecwebCollection:
     def __prepare_file(self):
         offset, endByte = 0, 0
 
-        while line := self.__file.readline():
-            if "<DOC>" in line:
-                offset = self.__file.tell()
-                continue
+        with tqdm(
+            total=os.path.getsize(Path.DataWebDir),
+            unit="B",
+            unit_scale=True,
+            unit_divisor=1024,
+        ) as t:
+            while line := self.__file.readline():
+                t.update(len(line.encode()))
 
-            if "</DOC>" in line:
-                endByte = self.__file.tell()
-                yield (offset, endByte)
-                self.__file.seek(endByte)
+                if "<DOC>" in line:
+                    offset = self.__file.tell()
+                    continue
+
+                if "</DOC>" in line:
+                    endByte = self.__file.tell()
+                    yield (offset, endByte)
+                    self.__file.seek(endByte)
 
     def nextDocument(self):
         # 1. When called, this API processes one document from corpus, and returns its doc number and content.
@@ -55,11 +67,21 @@ class TrecwebCollection:
 class TrecHTMLParser(HTMLParser):
     def __init__(self):
         super().__init__()
-        self.__content = []
+        self.__tmpDir = mkdtemp(dir=os.path.dirname(__file__))
+        self.__tmpFile = self.__new_tmp_file(self.__tmpDir)
 
     def handle_data(self, data: str):
-        if text := data.strip():
-            self.__content.append(text)
+        self.__tmpFile.write(data)
 
     def get_content(self):
-        return " ".join(self.__content)
+        self.__tmpFile.seek(0)
+        content = self.__tmpFile.read()
+        self.__tmpFile.close()
+        self.__tmpFile = self.__new_tmp_file(self.__tmpDir)
+        return content
+
+    def __new_tmp_file(self, dir):
+        return NamedTemporaryFile(mode="w+", dir=dir, suffix=".tmp", prefix="")
+
+    def __del__(self):
+        shutil.rmtree(self.__tmpDir)
