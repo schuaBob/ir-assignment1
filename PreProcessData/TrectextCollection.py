@@ -43,5 +43,5 @@ class TrectextCollection:
     def __extract_content(self, doc: str, tag: str):
         openTag, closeTag = f"<{tag}>", f"</{tag}>"
         return doc[
-            (start := doc.find(openTag) + len(openTag)) : doc.find(closeTag, start)
+            (start := doc.find(openTag) + len(openTag)) : doc.rfind(closeTag, start)
         ]

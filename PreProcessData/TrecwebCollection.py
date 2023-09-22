@@ -51,7 +51,7 @@ class TrecwebCollection:
         openTag = f"<{startTag}>" if not endTag else startTag
         closeTag = endTag if endTag else f"</{startTag}>"
         return doc[
-            (start := doc.find(openTag) + len(openTag)) : doc.find(closeTag, start)
+            (start := doc.find(openTag) + len(openTag)) : doc.rfind(closeTag, start)
         ]
 
 
