@@ -75,4 +75,5 @@ class TrecHTMLParser(HTMLParser):
         return NamedTemporaryFile(mode="w+", dir=dir, suffix=".tmp", prefix="")
 
     def __del__(self):
+        self.__tmpFile.close()
         shutil.rmtree(self.__tmpDir)
