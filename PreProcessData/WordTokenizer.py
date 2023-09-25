@@ -8,10 +8,10 @@ class WordTokenizer:
     def __init__(self, content: str):
         # Tokenize the input texts.
         self.__tokens = self.__prepare_tokens(content)
-        # next(self.__tokens)
         return
 
     def __prepare_tokens(self, content: str):
+        """A generator function to identify and return token by regex"""
         for tk in re.split(r"\s+|\W+|\d+", content.strip()):
             if tk:
                 yield tk

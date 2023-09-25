@@ -14,6 +14,8 @@ class TrectextCollection:
         return
 
     def __prepare_file(self):
+        """A generator function that reads one line at a time.
+        Yields a tuple of <DOC>'s and </DOC>'s postion until EOF"""
         offset, endByte = 0, 0
 
         while line := self.__file.readline():
@@ -27,11 +29,17 @@ class TrectextCollection:
                 self.__file.seek(endByte)
 
     def nextDocument(self):
+        """Get the next document info.
+        Extract the content given the position info of the doc
+        """
         # 1. When called, this API processes one document from corpus, and returns its doc number and content.
         # 2. When no document left, return null, and close the file.
         if docInfo := next(self.__docInfo, None):
             offset, endbyte = docInfo
+
+            # Jump to offset
             self.__file.seek(offset)
+            # Read content of size (endbyte - offset)
             doc = self.__file.read(endbyte - offset)
             docNo = self.__extract_content(doc, "DOCNO").strip()
             content = self.__extract_content(doc, "TEXT")
@@ -41,6 +49,7 @@ class TrectextCollection:
             return docInfo
 
     def __extract_content(self, doc: str, tag: str):
+        """Given the doc string and tag name, extract the content between the open tag and close tag."""
         openTag, closeTag = f"<{tag}>", f"</{tag}>"
         return doc[
             (start := doc.find(openTag) + len(openTag)) : doc.rfind(closeTag, start)

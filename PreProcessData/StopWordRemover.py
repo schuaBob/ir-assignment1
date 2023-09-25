@@ -6,6 +6,8 @@ import Classes.Path as Path
 # Please add comments along with your code.
 class StopWordRemover:
     def __init__(self):
+        """Store the entire stopwords in the memory since it's rather small than the entire document.
+        Also, memory search is fast"""
         # Load and store the stop words from the fileinputstream with appropriate data structure.
         # NT: address of stopword.txt is Path.StopwordDir.
         self.__stopwords = []
