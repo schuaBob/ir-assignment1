@@ -1,0 +1,20 @@
+# Code Execution
+
+## Environment
+OS: Win 11
+CPU i5-1135G7
+python: 3.10.13
+
+## Script to Run
+### Use pipenv to activate virtualenv and install the dependency, then run the code
+pipenv shell
+pipenv install
+python HW1Main.py (Run this if you already have nltk installed)
+
+## Text Output
+* Total: 503473 docs
+* Time to index text corpus:  0:52:09.527611
+
+## Web Output
+* Total : 198362 docs
+* Time to index web corpus: 0:24:54.959164
