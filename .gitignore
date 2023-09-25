@@ -211,9 +211,8 @@ Temporary Items
 *.icloud
 
 # End of https://www.toptal.com/developers/gitignore/api/macos
-
+stopword.txt
 *.trectext
 *.trecweb
-*.txt
 .vscode
 *.tmp
